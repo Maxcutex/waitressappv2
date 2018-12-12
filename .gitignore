@@ -1,10 +1,11 @@
 # Environment file
 .env.yml
 .coveralls.yml
+.env
 
 # local settings
 waitress/settings/development.py
-
+waitress/.env
 # Mac OS X
 .DS_Store
 
@@ -47,6 +48,7 @@ pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
+venv/
 .tox/
 .coverage
 .coverage.*
