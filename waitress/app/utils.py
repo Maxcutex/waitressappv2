@@ -2,8 +2,10 @@ from app.models import SlackUser
 from django.conf import settings
 import pytz
 import re
+import os
 import string
 import random
+import jwt
 from django.utils import timezone
 from django.db import transaction
 from slacker import Slacker
@@ -246,3 +248,6 @@ def regularize_guest_names(guest_list):
     for i in xrange(len(guest_list_cp)):
         guest_list_cp[i].firstname = "Guest {}".format(i + 1)
     return guest_list_cp
+
+def generate_token(payload):
+	return jwt.encode(payload, os.getenv('SECRET_KEY'))
