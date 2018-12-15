@@ -148,7 +148,6 @@ class UserViewSet(viewsets.ViewSet):
 			  paramType: form
 		"""
 		slack_id = request.POST.get('slackUserId')
-
 		if not slack_id:
 			content = {'status': 'You\'re  unauthorized to make this request'}
 			return Response(content, status=status_code.HTTP_401_UNAUTHORIZED)
@@ -181,16 +180,16 @@ class UserViewSet(viewsets.ViewSet):
 			else:
 				mealservice = mealservice[0]
 
-			api_auth_url = 'http://api.andela.com/api/v1/users?email={}'.format(user.email)
+			api_auth_url = os.getenv('API_AUTH_URL') + '/users?email={}'.format(user.email)
 			api_auth_headers = {'api-token': os.getenv('ANDELA_API_TOKEN')}
 
 			auth_resp = None
 
 			try:
+
 				auth_resp = requests.get(api_auth_url, headers=api_auth_headers)
 			except ConnectionError:
 				return Response({'msg': 'user unable to tap auth'}, status=400)
-			
 			user_id = auth_resp.json()['values'][0]['id']
 			payload = auth_resp.json()
 			jwt_token = generate_token(payload)
@@ -198,8 +197,8 @@ class UserViewSet(viewsets.ViewSet):
 
 			headers = {'X-Location': 1, 'Authorization': authorization}
 			meal_period = 'breakfast' if before_midday else 'lunch'
-			base_url = os.getenv('BASE_URL')
-			eats_url = urljoin(base_url, 'api/v1/orders/collect')
+			andela_eats_url = os.getenv('ANDELA_EATS_URL')
+			eats_url = urljoin(andela_eats_url, 'api/v1/orders/collect')
 			data = {'userId': user_id, 'orderType': meal_period, 'orderDate': datetime.strftime(datetime.now().date(), '%Y-%m-%d')}
 			
 			try:
